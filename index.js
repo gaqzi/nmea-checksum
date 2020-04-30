@@ -32,8 +32,36 @@ function isValid(_command) {
     return _checksum === checksum(command);
 }
 
+/* Given a NMEA sentence that doesn't start with \c assume it doesn't have any tags
+   and generate a checksum and prepend it to each line of input.
+
+   In testing I noticed cases where we had lines split by spaces as well as newlines,
+   not sure if this is just BQ formatting or something else.
+   */
+function addTimestampTag(timestamp, nmea) {
+    if(nmea.startsWith('\\c')) return nmea;
+
+    var splitBy = nmea.includes('\n') ? '\n' : ' ',
+        nmeaLines = nmea.split(splitBy),
+        sentences = [];
+
+    for(var i = 0;i < nmeaLines.length;i++) {
+        sentences.push(generateTsChecksumInSentence(timestamp, nmeaLines[i]));
+    }
+
+    return sentences.join("\n");
+}
+
+function generateTsChecksumInSentence(timestamp, nmea) {
+    var unixTs = timestamp.getTime() / 1000,
+        tsComment = 'c:' + unixTs;
+
+    return '\\' + tsComment + '*' + checksum(tsComment) + '\\' + nmea;
+}
+
 module.exports = {
     checksum: checksum,
+    addTimestampTag: regenerateChecksum,
     wrap: wrap,
     strip: strip,
     isValid: isValid

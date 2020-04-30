@@ -49,7 +49,7 @@ function addTimestampTag(timestamp, nmea) {
         sentences.push(generateTsChecksumInSentence(timestamp, nmeaLines[i]));
     }
 
-    return sentences.join("\n");
+    return sentences.join(splitBy);
 }
 
 function generateTsChecksumInSentence(timestamp, nmea) {

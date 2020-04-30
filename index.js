@@ -59,10 +59,13 @@ function generateTsChecksumInSentence(timestamp, nmea) {
     return '\\' + tsComment + '*' + checksum(tsComment) + '\\' + nmea;
 }
 
-module.exports = {
-    checksum: checksum,
-    addTimestampTag: regenerateChecksum,
-    wrap: wrap,
-    strip: strip,
-    isValid: isValid
+// module isn't available on BQ, and to make this just uploadable to a bucket
+if(typeof module !== 'undefined') {
+    module.exports = {
+        checksum: checksum,
+        addTimestampTag: regenerateChecksum,
+        wrap: wrap,
+        strip: strip,
+        isValid: isValid
+    };
 }
